@@ -1,17 +1,18 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { Switch } from 'react-router-dom';
-import PortalPage from '../pages/PortalPage';
+import { Switch, Route } from 'react-router-dom';
 import PortalRoute from './PortalRoute';
-import { portals } from '../data/PortalsData';
-import { StoreStateType } from '../redux/store/store';
+import { Portal, portals } from '../data/PortalsData';
+import Landing from '../pages/Landing';
 
 const Routes = () => {
-  const user = useSelector((state: StoreStateType) => state.user);
+  const routes = portals.map((portal: Portal) => <PortalRoute key={`${portal.id}`} exact path="/portals/:id" portalObject={portal} />)
 
   return (
   <Switch>
-    <PortalRoute exact path="/:id" user={user} component={PortalPage} portalObject={portals[0]} />
+    <Route exact path="/" component={Landing} />
+    {
+      routes
+    }
   </Switch>
   );
 };

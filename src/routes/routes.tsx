@@ -5,7 +5,9 @@ import { Portal, portals } from '../data/PortalsData';
 import Landing from '../pages/Landing';
 
 const Routes = () => {
-  const routes = portals.map((portal: Portal) => <PortalRoute key={`${portal.id}`} exact path="/portals/:id" portalObject={portal} />)
+  const routes = portals.map((portal: Portal) => (
+    <PortalRoute key={`${portal.id}`} exact path="/portals/:id" portalObject={portal} />)
+  );
 
   return (
   <Switch>

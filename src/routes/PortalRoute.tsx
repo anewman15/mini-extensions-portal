@@ -23,7 +23,7 @@ const PortalRoute = (portalProps: PortalRouteProps): ReactElement => {
           if (Object.keys(user).length) {
             return <PortalPage {...portalProps} {...props} />;
           } else {
-            return <Login />
+            return <Login />;
           }
         }
       }

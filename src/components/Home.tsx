@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import ClassCard from '../components/ClassCard';
+import ClassCard from './ClassCard';
 import saveUser from '../redux/actions/saveUser';
 import saveClasses from '../redux/actions/saveClasses';
 import saveStudents from '../redux/actions/saveStudents';

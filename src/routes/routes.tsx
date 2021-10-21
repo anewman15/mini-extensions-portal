@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Switch } from 'react-router-dom';
-import Home from '../pages/Home';
-import Login from '../pages/Login';
+import Home from '../components/Home';
+import Login from '../components/Login';
 import { AuthenticatedRoute, AuthenticationRoute } from './authentication';
 import { StoreStateType } from '../redux/store/store';
 

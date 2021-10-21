@@ -1,9 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Switch } from 'react-router-dom';
-import Home from '../components/Home';
-import Login from '../components/Login';
-import { AuthenticatedRoute, AuthenticationRoute } from './authentication';
+import PortalPage from '../pages/PortalPage';
+import PortalRoute from './PortalRoute';
+import { portals } from '../data/PortalsData';
 import { StoreStateType } from '../redux/store/store';
 
 const Routes = () => {
@@ -11,8 +11,7 @@ const Routes = () => {
 
   return (
   <Switch>
-    <AuthenticatedRoute exact path="/" user={user} component={Home}></AuthenticatedRoute>
-    <AuthenticationRoute exact path="/login" user={user} component={Login}></AuthenticationRoute>
+    <PortalRoute exact path="/:id" user={user} component={PortalPage} portalObject={portals[0]} />
   </Switch>
   );
 };

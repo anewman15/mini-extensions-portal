@@ -31,8 +31,8 @@ export type Portal = {
 
 const classesPortalWithoutPassword: Portal = {
   id: "bjBi3ns",
-  tableId: "tblKuYGAIcFy2sONm",
-  usersTableId: "tblcM02oqFyPD18aX",
+  tableId: "tblEp6fDDPCN4FCsE",
+  usersTableId: "tbl6H8Brliv4FeWPf",
   inverseLinkedRecordFieldInUsersTable: "Classes",
   loginFields: [
     {
@@ -48,7 +48,7 @@ const classesPortalWithoutPassword: Portal = {
     {
       type: "linkedRecords",
       name: "Students",
-      linkedTableId: "tblcM02oqFyPD18aX",
+      linkedTableId: "tbl6H8Brliv4FeWPf",
       linkedTablePrimaryFieldName: "Name",
     },
   ],
@@ -56,8 +56,8 @@ const classesPortalWithoutPassword: Portal = {
 
 const classesPortalWithPassword: Portal = {
   id: "kniUvoubiw",
-  tableId: "tblKuYGAIcFy2sONm",
-  usersTableId: "tblcM02oqFyPD18aX",
+  tableId: "tblEp6fDDPCN4FCsE",
+  usersTableId: "tbl6H8Brliv4FeWPf",
   inverseLinkedRecordFieldInUsersTable: "Classes",
   loginFields: [
     {
@@ -77,7 +77,7 @@ const classesPortalWithPassword: Portal = {
     {
       type: "linkedRecords",
       name: "Students",
-      linkedTableId: "tblcM02oqFyPD18aX",
+      linkedTableId: "tbl6H8Brliv4FeWPf",
       linkedTablePrimaryFieldName: "Name",
     },
   ],
@@ -86,7 +86,7 @@ const classesPortalWithPassword: Portal = {
 const examScoresPortalWithoutPassword: Portal = {
   id: "iuwh3vu",
   tableId: "tblC0JBsoni0KvePn",
-  usersTableId: "tblcM02oqFyPD18aX",
+  usersTableId: "tbl6H8Brliv4FeWPf",
   inverseLinkedRecordFieldInUsersTable: "Exam Scores",
   loginFields: [
     {
@@ -102,7 +102,7 @@ const examScoresPortalWithoutPassword: Portal = {
     {
       type: "linkedRecords",
       name: "Student",
-      linkedTableId: "tblcM02oqFyPD18aX",
+      linkedTableId: "tbl6H8Brliv4FeWPf",
       linkedTablePrimaryFieldName: "Name",
     },
   ],
@@ -111,7 +111,7 @@ const examScoresPortalWithoutPassword: Portal = {
 const examScoresPortalWithPassword: Portal = {
   id: "JKNoi23bh2",
   tableId: "tblC0JBsoni0KvePn",
-  usersTableId: "tblcM02oqFyPD18aX",
+  usersTableId: "tbl6H8Brliv4FeWPf",
   inverseLinkedRecordFieldInUsersTable: "Exam Scores",
   loginFields: [
     {
@@ -131,7 +131,7 @@ const examScoresPortalWithPassword: Portal = {
     {
       type: "linkedRecords",
       name: "Student",
-      linkedTableId: "tblcM02oqFyPD18aX",
+      linkedTableId: "tbl6H8Brliv4FeWPf",
       linkedTablePrimaryFieldName: "Name",
     },
   ],

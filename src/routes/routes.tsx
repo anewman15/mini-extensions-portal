@@ -6,9 +6,11 @@ import Landing from '../pages/Landing';
 
 const Routes = () => {
   const routes = portals.map((portal: Portal) => (
-    <PortalRoute key={`${portal.id}`} exact path="/portals/:id" portalObject={portal} />)
+    <PortalRoute key={`${portal.id}`} exact path={`/portals/${portal.id}`} portalObject={portal} />
+    )
   );
 
+  console.log(routes)
   return (
   <Switch>
     <Route exact path="/" component={Landing} />

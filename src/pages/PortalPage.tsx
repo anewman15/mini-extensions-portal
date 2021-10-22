@@ -1,4 +1,5 @@
 import React from 'react';
+import Home from '../components/Home';
 import { Portal } from '../data/PortalsData';
 
 type PortalPropsType = {
@@ -12,7 +13,7 @@ type PortalPropsType = {
 
 const PortalPage = ({ portalObject, match }: PortalPropsType ) => {
   return (
-    <div>Hi {match.params.id}</div>
+    <Home />
   )
 };
 

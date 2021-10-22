@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
-import { allStudentsResponse, getInverseTableData, getUser } from '../sandbox/airtable';
+import { getLinkedTableData, getInverseTableData, getUser } from '../sandbox/airtable';
 import createStudentsArray from '../utils/createStudentsArray';
 import createStudentsHash from '../utils/createStudentsHash';
 import filterString from '../utils/filterString';
@@ -47,17 +47,18 @@ const Login = ({ portal }: LoginPropsType) => {
         dispatch(saveUser(userData));
       };
 
-      const classesFilterString = filterString(userData.fields.Classes);
+      const inverseFilterString = filterString(userData.fields.Classes);
 
-      let classesTableResponse = await getInverseTableData(portal, classesFilterString);
-      dispatch(saveClasses(classesTableResponse));
+      let inverseTableResponse = await getInverseTableData(portal, inverseFilterString);
 
-      // const studentIds = createStudentsArray(classesTableResponse);
-      // const studentsFilterString = filterString(studentIds);
+      const linkedTableIds = createStudentsArray(inverseTableResponse);
+      const linkedTableFilterString = filterString(linkedTableIds);
 
-      // let allPeers: Records<FieldSet> = await allStudentsResponse(studentsFilterString)
-      // const studentsHash = createStudentsHash(allPeers);
-      // dispatch(saveStudents(studentsHash));
+      let linkedTableResponse: Records<FieldSet> = await getLinkedTableData(portal, linkedTableFilterString)
+      const studentsHash = createStudentsHash(linkedTableResponse);
+
+      dispatch(saveClasses(inverseTableResponse));
+      dispatch(saveStudents(studentsHash));
 
       setLoading(false);
       setError(null);

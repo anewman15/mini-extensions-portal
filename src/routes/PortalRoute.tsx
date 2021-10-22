@@ -23,6 +23,7 @@ const PortalRoute = (portalProps: PortalRouteProps): ReactElement => {
             return <PortalPage {...portalProps} {...props} />;
           } else {
             const { portalObject } = portalProps;
+            console.log(portalObject.loginFields);
             return <Login portal={portalObject} {...props} />;
           }
         }

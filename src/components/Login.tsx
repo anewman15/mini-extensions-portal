@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
-import { allStudentsResponse, getClasses, getUser } from '../sandbox/airtable';
+import { allStudentsResponse, getInverseTableData, getUser } from '../sandbox/airtable';
 import createStudentsArray from '../utils/createStudentsArray';
 import createStudentsHash from '../utils/createStudentsHash';
 import filterString from '../utils/filterString';
@@ -11,11 +11,10 @@ import saveStudents from '../redux/actions/saveStudents';
 import ErrorBox from '../components/ErrorBox';
 import { Record, Records, FieldSet } from 'airtable';
 import InputField from './InputField';
-import { portals, Portal } from '../data/PortalsData';
+import { portals, Portal, AirtableField } from '../data/PortalsData';
 
-type LoginFieldType = {
-  type: string,
-  name: string,
+export type LoginFieldValuesType = {
+  [key:string]: string,
 };
 
 type LoginPropsType = {
@@ -23,7 +22,11 @@ type LoginPropsType = {
 };
 
 const Login = ({ portal }: LoginPropsType) => {
-  const [loginFields, setLoginFields] = useState({});
+  const initialFieldsState: LoginFieldValuesType = {
+    name: '',
+  };
+
+  const [loginFieldValues, setLoginFieldValues] = useState(initialFieldsState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
@@ -34,49 +37,46 @@ const Login = ({ portal }: LoginPropsType) => {
     event.preventDefault();
     setLoading(true);
 
-    let classesFilterString = ''
-    let studentsFilterString = ''
+    try {
+      let userResponse = await getUser(portal, loginFieldValues);
+      let userData: Record<FieldSet> | any = null;
+      if (!userResponse.length) {
+        throw new Error('User Not Found.');
+      } else {
+        userData = userResponse[0];
+        dispatch(saveUser(userData));
+      };
 
-    // try {
-    //   let userResponse = await getUser(username);
-    //   let userData: Record<FieldSet> | any = null;
-    //   if (!userResponse.length) {
-    //     throw new Error('User Not Found.');
-    //   } else {
-    //     userData = userResponse[0];
-    //     dispatch(saveUser(userData));
-    //   };
+      const classesFilterString = filterString(userData.fields.Classes);
 
-    //   classesFilterString = filterString(userData.fields.Classes);
+      let classesTableResponse = await getInverseTableData(portal, classesFilterString);
+      dispatch(saveClasses(classesTableResponse));
 
-    //   let classesTableResponse = await getClasses(classesFilterString);
-    //   dispatch(saveClasses(classesTableResponse));
+      // const studentIds = createStudentsArray(classesTableResponse);
+      // const studentsFilterString = filterString(studentIds);
 
-    //   const studentIds = createStudentsArray(classesTableResponse);
-    //   studentsFilterString = filterString(studentIds);
+      // let allPeers: Records<FieldSet> = await allStudentsResponse(studentsFilterString)
+      // const studentsHash = createStudentsHash(allPeers);
+      // dispatch(saveStudents(studentsHash));
 
-    //   let allPeers: Records<FieldSet> = await allStudentsResponse(studentsFilterString)
-    //   const studentsHash = createStudentsHash(allPeers);
-    //   dispatch(saveStudents(studentsHash));
+      setLoading(false);
+      setError(null);
+      history.push('/');
 
-    //   setLoading(false);
-    //   setError(null);
-    //   history.push('/');
-
-    // } catch (e: any) {
-    //   setError(e.message);
-    //   setLoading(false);
-    // }
+    } catch (e: any) {
+      setError(e.message);
+      setLoading(false);
+    }
   };
 
-  console.log(loginFields);
+  console.log(loginFieldValues);
 
   return (
     <div className="container mx-auto my-4 flex flex-col items-center">
       <form onSubmit={handleLogin} className="mx-4">
         {
-          portal.loginFields.map((field: LoginFieldType): ReactElement => (
-            <InputField key={field.name} field={field} loginFields={loginFields} setLoginFields={setLoginFields} />
+          portal.loginFields.map((field: AirtableField): ReactElement => (
+            <InputField key={field.name} field={field} loginFieldValues={loginFieldValues} setLoginFieldValues={setLoginFieldValues} />
           ))
         }
         <button

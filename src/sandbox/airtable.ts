@@ -4,8 +4,8 @@ import { AirtableField, AirtableTextField, Portal } from "../data/PortalsData";
 
 const base = new Airtable({apiKey: 'keyEoL6yNFbdZBmFd'}).base('appw79tSjX0HfKkhx');
 
-export const allStudentsResponse = async (filterString: string) => {
-    return await base('Students').select({
+export const getLinkedTableData = async (portal: Portal, filterString: string) => {
+    return await base(`${portal.usersTableId}`).select({
     filterByFormula: `OR(${filterString})`,
     fields: ['Name'],
     view: "Grid view",

@@ -4,15 +4,20 @@ type LoginFields = {
   [key:string]: string,
 };
 
+type LoginFieldValuesType = {
+  [key:string]: string,
+};
+
 type InputFieldProps = {
   field: {
     type: string,
     name: string,
   },
+  loginFields: LoginFieldValuesType,
   setLoginFields: Dispatch<LoginFields>,
 };
 
-const InputField = ({ field, setLoginFields }: InputFieldProps) => {
+const InputField = ({ field, loginFields, setLoginFields }: InputFieldProps) => {
   const fieldName = field.name.toLowerCase();
   return (
     <label htmlFor={fieldName}>
@@ -22,7 +27,7 @@ const InputField = ({ field, setLoginFields }: InputFieldProps) => {
         type={field.type}
         name={fieldName}
         onChange={(event) => setLoginFields(
-          {
+          { ...loginFields,
             [event.target.name]: event.target.value,
           }
         )}

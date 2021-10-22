@@ -1,23 +1,17 @@
 import React, { Dispatch} from 'react';
-
-type LoginFields = {
-  [key:string]: string,
-};
+import { AirtableField } from '../data/PortalsData';
 
 type LoginFieldValuesType = {
   [key:string]: string,
 };
 
 type InputFieldProps = {
-  field: {
-    type: string,
-    name: string,
-  },
-  loginFields: LoginFieldValuesType,
-  setLoginFields: Dispatch<LoginFields>,
+  field: AirtableField
+  loginFieldValues: LoginFieldValuesType,
+  setLoginFieldValues: Dispatch<LoginFieldValuesType>,
 };
 
-const InputField = ({ field, loginFields, setLoginFields }: InputFieldProps) => {
+const InputField = ({ field, loginFieldValues, setLoginFieldValues }: InputFieldProps) => {
   const fieldName = field.name.toLowerCase();
   return (
     <label htmlFor={fieldName}>
@@ -26,8 +20,8 @@ const InputField = ({ field, loginFields, setLoginFields }: InputFieldProps) => 
         className="block border rounded-md py-1 px-2"
         type={field.type}
         name={fieldName}
-        onChange={(event) => setLoginFields(
-          { ...loginFields,
+        onChange={(event) => setLoginFieldValues(
+          { ...loginFieldValues,
             [event.target.name]: event.target.value,
           }
         )}

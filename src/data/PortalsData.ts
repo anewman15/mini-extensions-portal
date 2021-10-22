@@ -1,5 +1,5 @@
 export type AirtableTextField = {
-  type: "text";
+  type: "text" | "password";
   name: string;
 };
 
@@ -65,7 +65,7 @@ const classesPortalWithPassword: Portal = {
       name: "Name",
     },
     {
-      type: "text",
+      type: "password",
       name: "Password",
     },
   ],
@@ -119,7 +119,7 @@ const examScoresPortalWithPassword: Portal = {
       name: "Name",
     },
     {
-      type: "text",
+      type: "password",
       name: "Password",
     },
   ],

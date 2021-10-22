@@ -76,7 +76,7 @@ const Login = ({ portal }: LoginPropsType) => {
       <form onSubmit={handleLogin} className="mx-4">
         {
           portal.loginFields.map((field: LoginFieldType): ReactElement => (
-            <InputField key={field.name} field={field} setLoginFields={setLoginFields} />
+            <InputField key={field.name} field={field} loginFields={loginFields} setLoginFields={setLoginFields} />
           ))
         }
         <button

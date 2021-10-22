@@ -1,11 +1,8 @@
 import Airtable from "airtable";
-import { Portal } from "../data/PortalsData";
+import { LoginFieldValuesType } from "../components/Login";
+import { AirtableField, AirtableTextField, Portal } from "../data/PortalsData";
 
 const base = new Airtable({apiKey: 'keyEoL6yNFbdZBmFd'}).base('appw79tSjX0HfKkhx');
-
-type LoginFieldValuesType = {
-  [key:string]: string,
-};
 
 export const allStudentsResponse = async (filterString: string) => {
     return await base('Students').select({
@@ -15,16 +12,16 @@ export const allStudentsResponse = async (filterString: string) => {
   }).all();
 };
 
-export const getClasses = async (filterString: string) => {
-  return await base('Classes').select({
+export const getInverseTableData = async (portal: Portal, filterString: string) => {
+  return await base(`${portal.tableId}`).select({
     filterByFormula: `OR(${filterString})`,
-    fields: ['Name', 'Students'],
+    fields: portal.fieldsToDisplay.map((field: AirtableField ) => field.name),
     view: "Grid view",
   }).all();
 };
 
-export const getUser = async (portal: Portal, loginFields: LoginFieldValuesType) => {
-  const { name } = loginFields;
+export const getUser = async (portal: Portal, loginFieldValues: LoginFieldValuesType) => {
+  const { name } = loginFieldValues;
   return await base(`${portal.usersTableId}`).select({
     filterByFormula: `{Name} = '${name}'`,
     maxRecords: 1,

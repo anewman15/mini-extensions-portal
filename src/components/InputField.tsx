@@ -1,9 +1,6 @@
 import React, { Dispatch} from 'react';
 import { AirtableField } from '../data/PortalsData';
-
-type LoginFieldValuesType = {
-  [key:string]: string,
-};
+import { LoginFieldValuesType } from './Login';
 
 type InputFieldProps = {
   field: AirtableField

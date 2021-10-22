@@ -26,9 +26,9 @@ const Login = ({ portal }: LoginPropsType) => {
     name: '',
   };
 
-  const [loginFieldValues, setLoginFieldValues] = useState(initialFieldsState);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [loginFieldValues, setLoginFieldValues] = useState<LoginFieldValuesType>(initialFieldsState);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch();
 
   const history = useHistory();

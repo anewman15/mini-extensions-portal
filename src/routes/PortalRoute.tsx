@@ -14,7 +14,6 @@ type PortalRouteProps = {
 
 const PortalRoute = (portalProps: PortalRouteProps): ReactElement => {
   const user = useSelector((state: StoreStateType) => state.user);
-  console.log(user);
   return (
     <Route
       {...portalProps}
@@ -23,7 +22,8 @@ const PortalRoute = (portalProps: PortalRouteProps): ReactElement => {
           if (Object.keys(user).length) {
             return <PortalPage {...portalProps} {...props} />;
           } else {
-            return <Login />;
+            const { portalObject } = portalProps;
+            return <Login portal={portalObject} {...props} />;
           }
         }
       }

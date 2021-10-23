@@ -85,7 +85,7 @@ const classesPortalWithPassword: Portal = {
 
 const examScoresPortalWithoutPassword: Portal = {
   id: "iuwh3vu",
-  tableId: "tblC0JBsoni0KvePn",
+  tableId: "tblwVRavj0ffMI2uF",
   usersTableId: "tbl6H8Brliv4FeWPf",
   inverseLinkedRecordFieldInUsersTable: "Exam Scores",
   loginFields: [
@@ -110,7 +110,7 @@ const examScoresPortalWithoutPassword: Portal = {
 
 const examScoresPortalWithPassword: Portal = {
   id: "JKNoi23bh2",
-  tableId: "tblC0JBsoni0KvePn",
+  tableId: "tblwVRavj0ffMI2uF",
   usersTableId: "tbl6H8Brliv4FeWPf",
   inverseLinkedRecordFieldInUsersTable: "Exam Scores",
   loginFields: [

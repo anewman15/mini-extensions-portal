@@ -1,11 +1,6 @@
-type UserActionType = {
-  type: 'SAVE_USER',
-  payload: {
-    userData: any
-  }
-};
+import { AnyAction } from "redux";
 
-const user = (state = {}, action: UserActionType) => {
+const user = (state = {}, action: AnyAction) => {
   switch (action.type) {
     case 'SAVE_USER': {
       return action.payload.userData

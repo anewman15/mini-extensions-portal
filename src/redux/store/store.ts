@@ -1,22 +1,14 @@
-import { Record, Records, FieldSet } from 'airtable';
-import { createStore } from 'redux';
-import combinedReducer from '../reducers';
+import { Record, FieldSet } from 'airtable';
+import { configureStore } from './config';
 import { loadStoreFromLocalStorage, saveStoreToLocaStorage } from './persist';
 
-type initialStateType = {
+export type initialStateType = {
   user: Record<FieldSet> | {},
-  classes: Records<FieldSet> | [],
-  students: {
-    [key: string]: string
-  } | {}
 };
 
 const initialState: initialStateType = loadStoreFromLocalStorage();
 
-export const store = createStore(
-  combinedReducer,
-  initialState,
-);
+export const store = configureStore(initialState);
 
 store.subscribe(() => saveStoreToLocaStorage(store.getState()));
 

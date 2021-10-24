@@ -8,12 +8,12 @@ const staticReducers = {
 const createReducer = (asyncReducers: ReducersMapObject) => {
   return combineReducers({
     ...staticReducers,
-    ...asyncReducers
+    ...asyncReducers,
   });
 };
 
-export const configureStore: any = (existingReducers: ReducersMapObject) => {
-  const store = createStore(createReducer({}), existingReducers)
+export const configureStore: any = (initialState: ReducersMapObject) => {
+  const store = createStore(createReducer({}), initialState)
 
   store.asyncReducers = {};
 

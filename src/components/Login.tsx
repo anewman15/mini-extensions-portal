@@ -3,16 +3,24 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 import { getLinkedTableData, getInverseTableData, getUser } from '../sandbox/airtable';
 import createLinkedRecordsIdsArray from '../utils/createLinkedRecordsIdsArray';
-import createStudentsHash from '../utils/createStudentsHash';
 import filterString from '../utils/filterString';
 import ErrorBox from '../components/ErrorBox';
 import { Record, Records, FieldSet } from 'airtable';
 import InputField from './InputField';
 import { Portal, AirtableField } from '../data/PortalsData';
 import _ from 'lodash';
+import saveUser from '../redux/actions/saveUser';
+import { store } from '../redux/store/store';
+import portalDataReducer from '../redux/reducers/portalDataReducer';
+import portalDataAction from '../redux/actions/portalDataAction';
+
 export type LoginFieldValuesType = {
   [key:string]: string,
 };
+
+export type PortalDataType = {
+  [key: string]: Records<FieldSet> | [],
+}
 
 type LoginPropsType = {
   portal: Portal,
@@ -26,16 +34,8 @@ const Login = ({ portal }: LoginPropsType) => {
     name: '',
   };
 
-  const initialPortalData = {
-    id: portal.id,
-    user: {},
-    [inverseTableName]: [],
-    [linkedTableName]: {}
-  };
-
   const [loginFieldValues, setLoginFieldValues] = useState<LoginFieldValuesType>(initialFieldsState);
 
-  const [portalData, setPortalData] = useState(initialPortalData)
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch();
@@ -63,18 +63,25 @@ const Login = ({ portal }: LoginPropsType) => {
       const linkedTableFilterString = filterString(linkedTableIds);
 
       let linkedTableResponse: Records<FieldSet> = await getLinkedTableData(portal, linkedTableFilterString)
-      const studentsHash = createStudentsHash(linkedTableResponse);
 
-      setPortalData({
-        ...portalData,
-        user: userData,
+
+      const portalData = {
         [inverseTableName]: inverseTableResponse,
-        [linkedTableName]: studentsHash,
-      });
+        [linkedTableName]: linkedTableResponse,
+      };
+
+      const portalReducer = portalDataReducer(portal);
+      store.injectReducer(portal.id, portalReducer);
+
+      const savePortalData = portalDataAction(portal);
+
+      dispatch(saveUser(userData));
+      dispatch(savePortalData(portalData));
 
       setLoading(false);
       setError(null);
-      history.push('/');
+      setLoginFieldValues(initialFieldsState);
+      history.push(`/portals/${portal.id}`);
 
     } catch (e: any) {
       setError(e.message);

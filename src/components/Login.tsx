@@ -91,7 +91,8 @@ const Login = ({ portal }: LoginPropsType) => {
 
   return (
     <div className="container mx-auto my-4 flex flex-col items-center">
-      <form onSubmit={handleLogin} className="mx-4">
+      <h2 className="my-4 mx-auto py-4 px-8 text-2xl text-green-800 text-center font-bold">{`Log in to Portal ${portal.id.toUpperCase()}`}</h2>
+      <form onSubmit={handleLogin} className="mx-4 px-8 py-4 bg-gray-100 rounded">
         {
           portal.loginFields.map((field: AirtableField): ReactElement => (
             <InputField key={field.name} field={field} loginFieldValues={loginFieldValues} setLoginFieldValues={setLoginFieldValues} />

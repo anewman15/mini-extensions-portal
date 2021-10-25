@@ -1,6 +1,6 @@
 import Airtable from "airtable";
 import { LoginFieldValuesType } from "../components/Login";
-import { AirtableField, AirtableTextField, Portal } from "../data/PortalsData";
+import { AirtableField, Portal } from "../data/PortalsData";
 
 const base = new Airtable({apiKey: 'keyEoL6yNFbdZBmFd'}).base('appw79tSjX0HfKkhx');
 
@@ -21,11 +21,13 @@ export const getInverseTableData = async (portal: Portal, filterString: string) 
 };
 
 export const getUser = async (portal: Portal, loginFieldValues: LoginFieldValuesType) => {
+  const loginFieldNames = portal.loginFields.map((field: AirtableField) => field.name);
   const { name } = loginFieldValues;
+
   return await base(`${portal.usersTableId}`).select({
     filterByFormula: `{Name} = '${name}'`,
     maxRecords: 1,
-    fields: ['Name', `${portal.inverseLinkedRecordFieldInUsersTable}`],
+    fields: [...loginFieldNames, `${portal.inverseLinkedRecordFieldInUsersTable}`],
     view: "Grid view",
   }).all();
 };

@@ -11,10 +11,10 @@ type InputFieldProps = {
 };
 
 const InputField = ({ field, loginFieldValues, setLoginFieldValues }: InputFieldProps) => {
-  const fieldName = field.name.toLowerCase();
+  const fieldName = field.name;
   return (
     <label htmlFor={fieldName}>
-      <div className="text-xl font-bold my-2">{field.name}</div>
+      <div className="text-xl font-bold my-2">{fieldName}</div>
       <input
         className="block border rounded-md py-1 px-2"
         type={field.type}

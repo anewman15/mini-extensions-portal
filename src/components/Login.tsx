@@ -1,80 +1,115 @@
 import React, { ReactElement, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
-import { allStudentsResponse, getClasses, getUser } from '../sandbox/airtable';
-import createStudentsArray from '../utils/createStudentsArray';
-import createStudentsHash from '../utils/createStudentsHash';
+import { getLinkedTableData, getInverseTableData, getUser } from '../sandbox/airtable';
+import createLinkedRecordsIdsArray from '../utils/createLinkedRecordsIdsArray';
 import filterString from '../utils/filterString';
-import saveUser from '../redux/actions/saveUser';
-import saveClasses from '../redux/actions/saveClasses';
-import saveStudents from '../redux/actions/saveStudents';
 import ErrorBox from '../components/ErrorBox';
 import { Record, Records, FieldSet } from 'airtable';
 import InputField from './InputField';
-import { portals, Portal, AirtableField } from '../data/PortalsData';
+import { Portal, AirtableField } from '../data/PortalsData';
+import _ from 'lodash';
+import saveUser from '../redux/actions/saveUser';
+import { store } from '../redux/store/store';
+import portalDataReducer from '../redux/reducers/portalDataReducer';
+import portalDataAction from '../redux/actions/portalDataAction';
+import fieldsValueValidator from '../utils/fieldsValueValidator';
+import createApiFieldValues from '../utils/createApiFieldValues';
 
 export type LoginFieldValuesType = {
-  [key:string]: string,
+  [key: string]: string,
 };
+
+export type DataFetchStatusType = {
+  loading?: boolean,
+  error?: string | null
+}
+
+export type PortalDataType = {
+  [key: string]: Records<FieldSet> | [],
+}
 
 type LoginPropsType = {
   portal: Portal,
 };
 
 const Login = ({ portal }: LoginPropsType) => {
-  const initialFieldsState: LoginFieldValuesType = {
-    name: '',
-  };
+  const [loginFieldValues, setLoginFieldValues] = useState<LoginFieldValuesType>({});
 
-  const [loginFieldValues, setLoginFieldValues] = useState<LoginFieldValuesType>(initialFieldsState);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [dataFetchStatus, setDataFetchStatus] = useState<DataFetchStatusType>({});
   const dispatch = useDispatch();
 
   const history = useHistory();
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
-    setLoading(true);
+    setDataFetchStatus({ loading: true });
 
-    let classesFilterString = ''
-    let studentsFilterString = ''
+    try {
+      let userResponse = await getUser(portal, loginFieldValues);
+      let userData: Record<FieldSet> | any = null;
 
-    // try {
-    //   let userResponse = await getUser(username);
-    //   let userData: Record<FieldSet> | any = null;
-    //   if (!userResponse.length) {
-    //     throw new Error('User Not Found.');
-    //   } else {
-    //     userData = userResponse[0];
-    //     dispatch(saveUser(userData));
-    //   };
+      if (!userResponse.length) {
+        throw new Error('User Not Found.');
+      } else {
+        userData = userResponse[0];
+      };
 
-    //   classesFilterString = filterString(userData.fields.Classes);
+      const userInfo = {
+        login: {
+          authenticated: true,
+          ...loginFieldValues
+        },
+        data: userData,
+      };
 
-    //   let classesTableResponse = await getClasses(classesFilterString);
-    //   dispatch(saveClasses(classesTableResponse));
+      const apiFieldValues = createApiFieldValues(portal, userData);
+      const fieldsValidated = fieldsValueValidator(loginFieldValues, apiFieldValues);
+        if (fieldsValidated) {
+          dispatch(saveUser(userInfo));
+          setDataFetchStatus({});
+        } else {
+          throw new Error('Password mismatch. Please enter the correct password.');
+        }
+      // } else {
+      //   dispatch(saveUser(userInfo));
+      //   setDataFetchStatus({})
+      // };
+      // const inverseFilterString = filterString(userData.fields[portal.inverseLinkedRecordFieldInUsersTable]);
 
-    //   const studentIds = createStudentsArray(classesTableResponse);
-    //   studentsFilterString = filterString(studentIds);
+      // let inverseTableResponse = await getInverseTableData(portal, inverseFilterString);
 
-    //   let allPeers: Records<FieldSet> = await allStudentsResponse(studentsFilterString)
-    //   const studentsHash = createStudentsHash(allPeers);
-    //   dispatch(saveStudents(studentsHash));
+      // const linkedTableIds = createLinkedRecordsIdsArray(portal, inverseTableResponse);
+      // const linkedTableFilterString = filterString(linkedTableIds);
 
-    //   setLoading(false);
-    //   setError(null);
-    //   history.push('/');
+      // let linkedTableResponse: Records<FieldSet> = await getLinkedTableData(portal, linkedTableFilterString)
 
-    // } catch (e: any) {
-    //   setError(e.message);
-    //   setLoading(false);
-    // }
+
+      // const portalData = {
+      //   user: userData,
+      //   [inverseTableName]: inverseTableResponse,
+      //   [linkedTableName]: linkedTableResponse,
+      // };
+
+      // const portalReducer = portalDataReducer(portal);
+      // store.injectReducer(portal.id, portalReducer);
+
+      // const savePortalData = portalDataAction(portal);
+
+      // dispatch(savePortalData(portalData));
+      setLoginFieldValues({});
+      history.push(`/portals/${portal.id}`);
+
+    } catch (e: any) {
+      setDataFetchStatus({ error: e.message });
+    }
   };
 
+  console.log(Object.keys(loginFieldValues));
   return (
     <div className="container mx-auto my-4 flex flex-col items-center">
-      <form onSubmit={handleLogin} className="mx-4">
+      <h2 className="my-4 mx-auto py-4 px-8 text-2xl text-green-800 text-center font-bold">{`Log in to Portal ${portal.id.toUpperCase()}`}</h2>
+      <form onSubmit={handleLogin} className="mx-4 px-8 py-4 bg-gray-100 rounded">
         {
           portal.loginFields.map((field: AirtableField): ReactElement => (
             <InputField key={field.name} field={field} loginFieldValues={loginFieldValues} setLoginFieldValues={setLoginFieldValues} />
@@ -84,10 +119,10 @@ const Login = ({ portal }: LoginPropsType) => {
           type="submit"
           className="bg-green-700 py-1 px-4 my-5 border rounded-md text-gray-100"
           >
-          { loading ? 'Loading...' : 'Log in' }
+          { dataFetchStatus.loading ? 'Loading...' : 'Log in' }
         </button>
       </form>
-      { error && <ErrorBox error={error} /> }
+      { dataFetchStatus.error && <ErrorBox error={dataFetchStatus.error} /> }
     </div>
   );
 };

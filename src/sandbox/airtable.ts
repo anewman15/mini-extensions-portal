@@ -1,28 +1,37 @@
 import Airtable from "airtable";
+import { LoginFieldValuesType } from "../components/Login";
+import { AirtableField, Portal } from "../data/PortalsData";
+import createLoginFilterString from "../utils/createLoginFilterString";
 
-const base = new Airtable({apiKey: 'keyEoL6yNFbdZBmFd'}).base('app8ZbcPx7dkpOnP0');
+const base = new Airtable({apiKey: 'keyEoL6yNFbdZBmFd'}).base('appw79tSjX0HfKkhx');
 
-export const allStudentsResponse = async (filterString: string) => {
-    return await base('Students').select({
+export const getLinkedTableData = async (portal: Portal, filterString: string) => {
+  const tablePrimaryField = portal.fieldsToDisplay.filter((field: AirtableField) => field.type === 'linkedRecords');
+  const tablePrimaryFieldNames = tablePrimaryField.map((field: any) => field.linkedTablePrimaryFieldName);
+
+  return await base(`${portal.usersTableId}`).select({
     filterByFormula: `OR(${filterString})`,
-    fields: ['Name'],
+    fields: tablePrimaryFieldNames,
     view: "Grid view",
   }).all();
 };
 
-export const getClasses = async (filterString: string) => {
-  return await base('Classes').select({
+export const getInverseTableData = async (portal: Portal, filterString: string) => {
+  return await base(`${portal.tableId}`).select({
     filterByFormula: `OR(${filterString})`,
-    fields: ['Name', 'Students'],
+    fields: portal.fieldsToDisplay.map((field: AirtableField ) => field.name),
     view: "Grid view",
   }).all();
 };
 
-export const getUser = async (username: string) => {
-  return await base('Students').select({
-    filterByFormula: `{Name} = '${username}'`,
+export const getUser = async (portal: Portal, loginFieldValues: LoginFieldValuesType) => {
+  const loginFieldNames = Object.keys(loginFieldValues);
+  const loginFilterString = createLoginFilterString(loginFieldValues);
+
+  return await base(`${portal.usersTableId}`).select({
+    filterByFormula: `AND(${loginFilterString})`,
     maxRecords: 1,
-    fields: ['Name', 'Classes'],
+    fields: [...loginFieldNames, `${portal.inverseLinkedRecordFieldInUsersTable}`],
     view: "Grid view",
   }).all();
 };

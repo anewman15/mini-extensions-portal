@@ -38,7 +38,7 @@ const useAuth = (portal: Portal) => {
             setAuthenticated(false)
           } else {
             const apiFieldValues = createApiFieldValues(portal, userData);
-            if (!fieldsValueValidator(user.login, apiFieldValues)) { setAuthenticated(false)};
+              setAuthenticated(fieldsValueValidator(user.login, apiFieldValues));
           };
         })
         .catch((e: any) => {
@@ -50,7 +50,7 @@ const useAuth = (portal: Portal) => {
       isCancelled = true;
     };
 
-  }, [user]);
+  }, []);
 
   return (
     [authenticated, error]

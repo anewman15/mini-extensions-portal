@@ -13,10 +13,17 @@ import saveUser from '../redux/actions/saveUser';
 import { store } from '../redux/store/store';
 import portalDataReducer from '../redux/reducers/portalDataReducer';
 import portalDataAction from '../redux/actions/portalDataAction';
+import fieldsValueValidator from '../utils/fieldsValueValidator';
+import createApiFieldValues from '../utils/createApiFieldValues';
 
 export type LoginFieldValuesType = {
-  [key:string]: string,
+  [key: string]: string,
 };
+
+export type DataFetchStatusType = {
+  loading?: boolean,
+  error?: string | null
+}
 
 export type PortalDataType = {
   [key: string]: Records<FieldSet> | [],
@@ -27,67 +34,85 @@ type LoginPropsType = {
 };
 
 const Login = ({ portal }: LoginPropsType) => {
-  const inverseTableName = _.camelCase(portal.inverseLinkedRecordFieldInUsersTable);
-  const linkedTableName = portal.fieldsToDisplay[1].name.toLowerCase();
+  // const inverseTableName = _.camelCase(portal.inverseLinkedRecordFieldInUsersTable);
+  // const linkedTableName = portal.fieldsToDisplay[1].name.toLowerCase();
 
-  const initialFieldsState: LoginFieldValuesType = {
-    name: '',
-  };
+  // const initialFieldsState: LoginFieldValuesType = {
+  //   name: '',
+  // };
 
-  const [loginFieldValues, setLoginFieldValues] = useState<LoginFieldValuesType>(initialFieldsState);
+  const [loginFieldValues, setLoginFieldValues] = useState<LoginFieldValuesType>({});
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [dataFetchStatus, setDataFetchStatus] = useState<DataFetchStatusType>({});
   const dispatch = useDispatch();
 
   const history = useHistory();
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
-    setLoading(true);
+    setDataFetchStatus({ loading: true });
 
     try {
       let userResponse = await getUser(portal, loginFieldValues);
       let userData: Record<FieldSet> | any = null;
+
       if (!userResponse.length) {
         throw new Error('User Not Found.');
       } else {
         userData = userResponse[0];
       };
 
-      const inverseFilterString = filterString(userData.fields[portal.inverseLinkedRecordFieldInUsersTable]);
-
-      let inverseTableResponse = await getInverseTableData(portal, inverseFilterString);
-
-      const linkedTableIds = createLinkedRecordsIdsArray(portal, inverseTableResponse);
-      const linkedTableFilterString = filterString(linkedTableIds);
-
-      let linkedTableResponse: Records<FieldSet> = await getLinkedTableData(portal, linkedTableFilterString)
-
-
-      const portalData = {
-        [inverseTableName]: inverseTableResponse,
-        [linkedTableName]: linkedTableResponse,
+      const userInfo = {
+        login: {
+          authenticated: true,
+          ...loginFieldValues
+        },
+        data: userData,
       };
 
-      const portalReducer = portalDataReducer(portal);
-      store.injectReducer(portal.id, portalReducer);
+      const apiFieldValues = createApiFieldValues(portal, userData);
+      const fieldsValidated = fieldsValueValidator(loginFieldValues, apiFieldValues);
+        if (fieldsValidated) {
+          dispatch(saveUser(userInfo));
+          setDataFetchStatus({});
+        } else {
+          throw new Error('Password mismatch. Please enter the correct password.');
+        }
+      // } else {
+      //   dispatch(saveUser(userInfo));
+      //   setDataFetchStatus({})
+      // };
+      // const inverseFilterString = filterString(userData.fields[portal.inverseLinkedRecordFieldInUsersTable]);
 
-      const savePortalData = portalDataAction(portal);
+      // let inverseTableResponse = await getInverseTableData(portal, inverseFilterString);
 
-      dispatch(saveUser(userData));
-      dispatch(savePortalData(portalData));
+      // const linkedTableIds = createLinkedRecordsIdsArray(portal, inverseTableResponse);
+      // const linkedTableFilterString = filterString(linkedTableIds);
 
-      setLoading(false);
-      setError(null);
-      setLoginFieldValues(initialFieldsState);
+      // let linkedTableResponse: Records<FieldSet> = await getLinkedTableData(portal, linkedTableFilterString)
+
+
+      // const portalData = {
+      //   user: userData,
+      //   [inverseTableName]: inverseTableResponse,
+      //   [linkedTableName]: linkedTableResponse,
+      // };
+
+      // const portalReducer = portalDataReducer(portal);
+      // store.injectReducer(portal.id, portalReducer);
+
+      // const savePortalData = portalDataAction(portal);
+
+      // dispatch(savePortalData(portalData));
+      setLoginFieldValues({});
       history.push(`/portals/${portal.id}`);
 
     } catch (e: any) {
-      setError(e.message);
-      setLoading(false);
+      setDataFetchStatus({ error: e.message });
     }
   };
+
+  console.log(Object.keys(loginFieldValues));
 
   return (
     <div className="container mx-auto my-4 flex flex-col items-center">
@@ -102,10 +127,10 @@ const Login = ({ portal }: LoginPropsType) => {
           type="submit"
           className="bg-green-700 py-1 px-4 my-5 border rounded-md text-gray-100"
           >
-          { loading ? 'Loading...' : 'Log in' }
+          { dataFetchStatus.loading ? 'Loading...' : 'Log in' }
         </button>
       </form>
-      { error && <ErrorBox error={error} /> }
+      { dataFetchStatus.error && <ErrorBox error={dataFetchStatus.error} /> }
     </div>
   );
 };

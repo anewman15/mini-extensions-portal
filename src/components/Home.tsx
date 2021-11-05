@@ -8,6 +8,9 @@ import { Portal } from '../data/PortalsData';
 import _ from 'lodash';
 import { loadStoreFromLocalStorage } from '../redux/store/persist';
 import portalDataAction from '../redux/actions/portalDataAction';
+import useAuth from '../hooks/useAuth';
+import { Redirect } from 'react-router';
+import Login from './Login';
 type HomePropType = {
   portal: Portal,
 }
@@ -15,12 +18,11 @@ type HomePropType = {
 const Home = ({ portal }: HomePropType) => {
   const inverseTableData = _.camelCase(portal.inverseLinkedRecordFieldInUsersTable);
   // const linkedTableData = _.camelCase(portal.fieldsToDisplay[1].name);
-
   const user = useSelector((state: StoreStateType) => state.user);
   // const data = useSelector((state: StoreStateType) => state[portal.id]);
   const dispatch = useDispatch();
   const currentState = loadStoreFromLocalStorage();
-  const inverseTableItems = currentState[portal.id][inverseTableData];
+  // const inverseTableItems = currentState[portal.id][inverseTableData];
   // const linkedTableItems = currentState[portal.id][linkedTableData]
   const savePortalData = portalDataAction(portal);
 
@@ -30,17 +32,25 @@ const Home = ({ portal }: HomePropType) => {
     dispatch(savePortalData({}));
   }
 
-  console.log(currentState[portal.id]);
+  const [authenticated, error] = useAuth(portal);
+  const userData = {
+    ...user,
+    login: {...user.login,
+      authenticated,
+    }
+  }
+  // if (!error) {dispatch(saveUser(userData))};
+  console.log(authenticated);
   console.log(inverseTableData);
 
-  return (
+  const content = (
     <div className="relative container mx-auto my-6 p-4 w-10/12 md:w-8/12">
       <div className="absolute top-0 right-8">
         <button
           className="bg-red-400 my-2 px-3 py-1 rounded-md text-gray-100"
           type="button"
           onClick={logOut}
-        >
+          >
           Log out
         </button>
       </div>
@@ -52,6 +62,7 @@ const Home = ({ portal }: HomePropType) => {
       </div>
     </div>
   );
+  return (authenticated ? content : <Redirect to={`/portals/${portal.id}`} />)
 };
 
 export default Home;

@@ -7,9 +7,7 @@ const fieldsValueValidator = (formFieldValues: LoginFieldValuesType, apiFieldVal
   if (formFields.length !== apiFields.length) { return false };
 
   const validValues = apiFields.map((key: string) => formFieldValues[key] === apiFieldValues[key]);
-  if (validValues.includes(false)) { return false}
-
-  return true;
+  return !validValues.includes(false);
 };
 
 export default fieldsValueValidator;

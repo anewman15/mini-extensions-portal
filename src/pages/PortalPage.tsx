@@ -19,7 +19,7 @@ const PortalPage = ({ portalObject, match }: PortalPropsType ) => {
 
   return (
     <div>
-      { Object.keys(user).length ? <Home portal={portalObject} /> : <Login portal={portalObject} />}
+      { Object.keys(user).includes('data') ? <Home portal={portalObject} /> : <Login portal={portalObject} />}
     </div>
   )
 };

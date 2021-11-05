@@ -34,13 +34,6 @@ type LoginPropsType = {
 };
 
 const Login = ({ portal }: LoginPropsType) => {
-  // const inverseTableName = _.camelCase(portal.inverseLinkedRecordFieldInUsersTable);
-  // const linkedTableName = portal.fieldsToDisplay[1].name.toLowerCase();
-
-  // const initialFieldsState: LoginFieldValuesType = {
-  //   name: '',
-  // };
-
   const [loginFieldValues, setLoginFieldValues] = useState<LoginFieldValuesType>({});
 
   const [dataFetchStatus, setDataFetchStatus] = useState<DataFetchStatusType>({});
@@ -113,7 +106,6 @@ const Login = ({ portal }: LoginPropsType) => {
   };
 
   console.log(Object.keys(loginFieldValues));
-
   return (
     <div className="container mx-auto my-4 flex flex-col items-center">
       <h2 className="my-4 mx-auto py-4 px-8 text-2xl text-green-800 text-center font-bold">{`Log in to Portal ${portal.id.toUpperCase()}`}</h2>
